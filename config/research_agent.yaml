@@ -1,0 +1,12 @@
+agent:
+  name: bone_research_agent
+  description: >
+    Searches literature and repositories for AI-based bone classification.
+
+  tools:
+    - search_papers
+    - search_repos
+    - extract_entities
+    - query_graph
+
+  strategy: plan-and-execute
