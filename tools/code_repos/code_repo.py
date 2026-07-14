@@ -68,6 +68,56 @@ class CodeRepository:
             source_id=str(repo["id"]) if repo.get("id") is not None else None,
         )
 
+    @classmethod
+    def from_huggingface(cls, repo: dict[str, Any], *, kind: str = "model") -> CodeRepository:
+        """Build a ``CodeRepository`` from a Hugging Face API model or space object.
+
+        Args:
+            repo: A model or space dict from the Hugging Face Hub API.
+            kind: Either ``"model"`` or ``"space"``.
+
+        Returns:
+            A ``CodeRepository`` with ``source`` set to ``huggingface``.
+        """
+        repo_id = repo.get("id") or repo.get("modelId") or ""
+        name = repo_id.split("/")[-1] if repo_id else ""
+        tags = list(repo.get("tags") or [])
+
+        if kind == "space":
+            sdk = repo.get("sdk")
+            if sdk:
+                tags.append(sdk)
+            language = sdk
+            description = repo.get("subtitle") or repo.get("description")
+        else:
+            pipeline = repo.get("pipeline_tag")
+            if pipeline:
+                tags.append(pipeline)
+            language = repo.get("library_name")
+            card_data = repo.get("cardData") or {}
+            description = card_data.get("summary") or pipeline
+
+        license_name = None
+        card_data = repo.get("cardData") or {}
+        if card_data.get("license"):
+            license_name = card_data["license"]
+        elif repo.get("license"):
+            license_name = repo["license"]
+
+        return cls(
+            name=name,
+            full_name=repo_id,
+            url=f"https://huggingface.co/{repo_id}" if repo_id else None,
+            description=description,
+            language=language,
+            stars=repo.get("likes"),
+            forks=repo.get("downloads") if kind == "model" else None,
+            license=license_name,
+            topics=tags,
+            source="huggingface",
+            source_id=repo_id or None,
+        )
+
 
 @dataclass
 class PaperRepositoryLink:

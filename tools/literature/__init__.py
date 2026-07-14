@@ -6,12 +6,15 @@ Scholar, and combined multi-source queries.
 
 from .openalex import search_openalex
 from .paper import Paper
+from .qdrant_store import embed_papers, search_similar_papers
 from .search_papers import search_papers
 from .semantic_scholar import search_semantic_scholar
 
 __all__ = [
     "Paper",
+    "embed_papers",
     "search_openalex",
     "search_papers",
     "search_semantic_scholar",
+    "search_similar_papers",
 ]

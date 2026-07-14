@@ -45,6 +45,19 @@ class Paper:
         """Serialize this paper to a plain dictionary for JSON export."""
         return asdict(self)
 
+    def embedding_text(self) -> str:
+        """Build the text representation used for semantic embedding."""
+        parts = [self.title]
+        if self.abstract:
+            parts.append(self.abstract)
+        if self.authors:
+            parts.append("Authors: " + ", ".join(self.authors))
+        if self.topics:
+            parts.append("Topics: " + ", ".join(self.topics))
+        if self.venue:
+            parts.append(f"Venue: {self.venue}")
+        return "\n\n".join(parts)
+
     @classmethod
     def from_openalex(cls, work: dict[str, Any]) -> Paper:
         """Build a ``Paper`` from an OpenAlex works API response object.
